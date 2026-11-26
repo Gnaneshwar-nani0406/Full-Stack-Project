@@ -1,0 +1,449 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare Dashboard</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:'Poppins',sans-serif;
+        }
+
+        body{
+            background: linear-gradient(135deg,#667eea,#764ba2);
+            min-height:100vh;
+            color:white;
+            padding:30px;
+        }
+
+        .container{
+            max-width:1400px;
+            margin:auto;
+        }
+
+        .header{
+            text-align:center;
+            margin-bottom:40px;
+        }
+
+        .header h1{
+            font-size:60px;
+            font-weight:700;
+            margin-bottom:10px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:15px;
+        }
+
+        .header h1 img{
+            max-width:80px;
+            height:auto;
+            object-fit:contain;
+        }
+
+        .header p{
+            font-size:22px;
+            opacity:0.9;
+        }
+
+        /* STAT CARDS */
+
+        .cards{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+            gap:25px;
+            margin-bottom:40px;
+        }
+
+        .card{
+            background:rgba(255,255,255,0.15);
+            backdrop-filter:blur(10px);
+            border:1px solid rgba(255,255,255,0.2);
+            border-radius:20px;
+            padding:25px;
+            transition:0.3s;
+            box-shadow:0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .card:hover{
+            transform:translateY(-5px);
+        }
+
+        .card h2{
+            font-size:18px;
+            margin-bottom:15px;
+            opacity:0.9;
+        }
+
+        .card .number{
+            font-size:42px;
+            font-weight:700;
+        }
+
+        /* GRID SECTION */
+
+        .dashboard-grid{
+            display:grid;
+            grid-template-columns:2fr 1fr;
+            gap:25px;
+        }
+
+        .box{
+            background:rgba(255,255,255,0.15);
+            backdrop-filter:blur(10px);
+            border-radius:20px;
+            padding:25px;
+            border:1px solid rgba(255,255,255,0.2);
+            box-shadow:0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .box h2{
+            margin-bottom:20px;
+            font-size:28px;
+        }
+
+        /* TABLE */
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+        }
+
+        table th,
+        table td{
+            padding:15px;
+            text-align:left;
+        }
+
+        table th{
+            background:rgba(255,255,255,0.1);
+        }
+
+        table tr{
+            border-bottom:1px solid rgba(255,255,255,0.1);
+        }
+
+        .status{
+            padding:6px 14px;
+            border-radius:20px;
+            font-size:14px;
+            font-weight:600;
+        }
+
+        .pending{
+            background:#ff9800;
+        }
+
+        .completed{
+            background:#4caf50;
+        }
+
+        .cancelled{
+            background:#f44336;
+        }
+
+        /* USERS */
+
+        .user{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            margin-bottom:18px;
+            padding-bottom:15px;
+            border-bottom:1px solid rgba(255,255,255,0.1);
+        }
+
+        .user-left{
+            display:flex;
+            align-items:center;
+            gap:15px;
+        }
+
+        .avatar{
+            width:50px;
+            height:50px;
+            border-radius:50%;
+            background:white;
+            color:#764ba2;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-weight:bold;
+            font-size:20px;
+        }
+
+        /* BUTTONS */
+
+        .actions{
+            display:grid;
+            grid-template-columns:repeat(2,1fr);
+            gap:15px;
+            margin-top:20px;
+        }
+
+        .btn{
+            padding:15px;
+            border:none;
+            border-radius:15px;
+            background:white;
+            color:#764ba2;
+            font-weight:600;
+            cursor:pointer;
+            transition:0.3s;
+        }
+
+        .btn:hover{
+            background:#f1f1f1;
+            transform:scale(1.03);
+        }
+
+        /* PAYMENT BOX */
+
+        .payment{
+            margin-top:20px;
+        }
+
+        .payment-item{
+            margin-bottom:20px;
+        }
+
+        .payment-top{
+            display:flex;
+            justify-content:space-between;
+            margin-bottom:8px;
+        }
+
+        .bar{
+            height:10px;
+            background:rgba(255,255,255,0.2);
+            border-radius:10px;
+            overflow:hidden;
+        }
+
+        .bar-fill{
+            height:100%;
+            background:white;
+        }
+
+        @media(max-width:1000px){
+
+            .dashboard-grid{
+                grid-template-columns:1fr;
+            }
+
+            .header h1{
+                font-size:42px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1><img src="{% static 'images/logo.png' %}" alt="Medicare Logo"> Healthcare Dashboard</h1>
+        <p>Live Hospital Management Overview</p>
+    </div>
+
+    <!-- TOP CARDS -->
+
+    <div class="cards">
+
+        <div class="card">
+            <h2>Total Registrations</h2>
+            <div class="number">
+                {{ total_users }}
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Total Appointments</h2>
+            <div class="number">
+                {{ total_appointments }}
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Canceled Appointments</h2>
+            <div class="number">
+                {{ canceled_appointments }}
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Total Payments</h2>
+            <div class="number">
+                {{ total_payments }}
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Total Amount</h2>
+            <div class="number">
+                ₹ {{ total_amount }}
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Total Doctors</h2>
+            <div class="number">
+                {{ doctors|length }}
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MAIN GRID -->
+
+    <div class="dashboard-grid">
+
+        <!-- APPOINTMENTS -->
+
+        <div class="box">
+
+            <h2>Appointments</h2>
+
+            {% if recent_appointments %}
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Date</th>
+                        <th>Payment</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for appointment in recent_appointments %}
+
+                    <tr>
+
+                        <td>{{ appointment.name }}</td>
+                        <td>{{ appointment.doctor }}</td>
+                        <td>{{ appointment.date }}</td>
+                        <td>
+                            {% for payment in appointment.payment_set.all %}
+                                ₹ {{ payment.amount }}<br>
+                            {% empty %}
+                                -
+                            {% endfor %}
+                        </td>
+                        <td>{{ appointment.status }}</td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            {% else %}
+
+                <p>No appointments available.</p>
+
+            {% endif %}
+
+        </div>
+
+        <!-- RIGHT SIDE -->
+
+        <div>
+
+            <!-- USERS -->
+
+            <div class="box">
+
+                <h2>Users</h2>
+
+                {% if recent_users %}
+
+                    {% for user in recent_users %}
+
+                    <div class="user">
+
+                        <div class="user-left">
+
+                            <div class="avatar">
+
+                                {{ user.name|first|upper }}
+
+                            </div>
+
+                            <div>
+
+                                <h4>{{ user.name }}</h4>
+                                <small>{{ user.email }}</small>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <p>No users available.</p>
+
+                {% endif %}
+
+            </div>
+
+            <!-- DOCTORS -->
+
+            <div class="box payment">
+
+                <h2>Doctors</h2>
+
+                {% if doctors %}
+
+                    {% for doctor in doctors %}
+
+                        <div class="payment-item">
+
+                            <div class="payment-top">
+
+                                <span>{{ doctor }}</span>
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <p>No doctors available.</p>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
